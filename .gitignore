@@ -30,3 +30,13 @@
 
 # Debug files
 *.dSYM/
+
+# ignore build files
+contiki-*.a
+contiki-*.map
+Makefile.*
+obj_native
+*.native
+symbols.h
+symbols.c
+
