@@ -35,8 +35,9 @@
 contiki-*.a
 contiki-*.map
 Makefile.*
-obj_native
+obj_*
 *.native
+*.sky
 symbols.h
 symbols.c
 
