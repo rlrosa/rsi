@@ -99,7 +99,7 @@ PROCESS_THREAD(rsi_main_process, ev, data)
             ev == sensors_event &&
             data == &button_sensor);
         button_counter++;
-        printf("New button press. Total: %d", button_counter);
+        printf("New button press. Total: %d\n", button_counter);
     }
 
 	PROCESS_END();
