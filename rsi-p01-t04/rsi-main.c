@@ -13,7 +13,7 @@
 // cfg section
 // -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 // temperature sensor: if defined then sht11, else internal microcontroller
-#define RSI_USE_SHT11
+//#define RSI_USE_SHT11
 
 // temperature sensors sampling frequency (seconds)
 #define RSI_TEMPERATURE_READ_INTERVAL_S 1
@@ -28,7 +28,7 @@
 #ifdef RSI_USE_SHT11
 #include "dev/sht11-sensor.h"
 #else
-#error "Only SHT11 implemented"
+#include "../platform/sky/dev/temperature-sensor.h"
 #endif // RSI_USE_SHT11
 
 // to convert avg or .buf sample to SI use the following equations:
@@ -75,9 +75,17 @@ PROCESS_THREAD(rsi_main, ev, data)
                 dbg(("m:ev[%d] - dat: %d\n", ev, *(int*)data));
                 break;
             case RSI_EV_NEW_AVG:
+#ifdef RSI_USE_SHT11
                 // convert raw data into SI
                 s = ((0.01*((rsi_td_t*)data)->avg) - 39.60);
-                dec = s;
+#else // RSI_USE_SHT11
+                // from datasheet:
+                //   12 bit ADC - 2.5v ref
+                //   VTEMP=0.00355(TEMPC)+0.986
+                s = 2.5 * ((rsi_td_t*)data)->avg / (1<<12);
+                s = (s - 0.986)/0.00355;
+#endif // RSI_USE_SHT11
+                dec  = s;
                 frac = s - dec;
                 printf("m:ev[%d] - avg: %d.%02u C\n",
                        ev,
